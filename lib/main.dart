@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 //
 import 'bindings/bindings.dart';
-import '../screens/login.dart';
+import 'screens/before_Home/login.dart';
 
 void main() {
   runApp(const MyApp());
