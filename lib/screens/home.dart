@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:login_ui_flutter/screens/after%20home/DailyLogScreen.dart';
+import 'package:login_ui_flutter/screens/after%20home/E-commerce.dart';
 import 'package:login_ui_flutter/screens/after%20home/horse_book_screen.dart';
-import 'package:login_ui_flutter/screens/after%20home/tree.dart';
+import 'package:login_ui_flutter/screens/after%20home/ocr_scanner_screen.dart';
+import 'package:login_ui_flutter/screens/after%20home/family_tree_screen.dart';
 import 'package:login_ui_flutter/screens/profile%20screens/account_screen.dart';
 import 'package:login_ui_flutter/screens/profile%20screens/horse_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+// استيراد شاشات شجرة العائلة
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,18 +26,21 @@ class _HomeState extends State<Home> {
     "Horse 3",
   ];
 
+  double slider = 150;
+  int num1 = 0;
+  int num2 = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Drawer (menu) جانبي
       drawer: Drawer(
-        width: MediaQuery.of(context).size.width * 0.6, // عرض القائمة الجانبية 60% من الشاشة
+        width: MediaQuery.of(context).size.width * 0.6,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
               decoration: const BoxDecoration(
-                color:const Color.fromARGB(255, 163, 166, 173),
+                color: Color.fromARGB(255, 163, 166, 173),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,54 +52,65 @@ class _HomeState extends State<Home> {
               ),
             ),
             ListTile(
-  leading: const Icon(Icons.note),
-  title: const Text('تسجيل يوميات الحصان'),
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const DailyLogScreen()),
-    );
-  },
-),
-ListTile(
-  leading: const Icon(Icons.insights),
-  title: const Text('تحليلات قادمة'),
-  onTap: () {
-    // شاشة مستقبلية للتحليلات أو الإحصائيات
-  },
-),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
+              leading: const Icon(Icons.data_saver_off_sharp),
+              title: const Text('Horse data '),
               onTap: () {
-                // TODO: Navigate to settings screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DailyLogScreen()),
+                );
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.shop),
+              title: const Text(' Shop'),
+              onTap: () {
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HorseMarketScreen()),
+                );// شاشة مستقبلية للتحليلات أو الإحصائيات
+              },
+            ),
+           
             ListTile(
               leading: const Icon(FontAwesomeIcons.tree),
               title: const Text('family tree'),
               onTap: () {
-                   Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) =>FamilyTreeScreen()),  // استدعاء شاشة FamilyTreeScreen
-    );
+                Navigator.push(
+                  context,
+                  // استدعاء شاشة شجرة العائلة الرئيسية
+                  MaterialPageRoute(builder: (context) =>  FamilyTreeScreen()),
+
+                  // إذا أردت استخدام FamilyTreeEntryScreen (تحتاج parentName):
+                  // MaterialPageRoute(builder: (context) => FamilyTreeEntryScreen(parentName: "root")),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.qr_code),
               title: const Text('scanner'),
               onTap: () {
-                // TODO: Navigate to horse list screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const OcrScannerScreen()),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.book_rounded),
               title: const Text('book'),
               onTap: () {
-                 Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) =>HorseBookScreen()),  // استدعاء شاشة FamilyTreeScreen
-    );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HorseBookScreen()),
+                );
+              },
+            ),
+             ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                // TODO: Navigate to settings screen
               },
             ),
             ListTile(
@@ -102,7 +120,6 @@ ListTile(
                 // TODO: Handle logout
               },
             ),
-             
           ],
         ),
       ),
@@ -115,66 +132,22 @@ ListTile(
             "Home",
             style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 163, 166, 173)),
           ),
-          // إضافة أيقونة المينيو لفتح القائمة الجانبية
           leading: Builder(
             builder: (context) => IconButton(
               icon: const Icon(Icons.menu),
               onPressed: () {
-                Scaffold.of(context).openDrawer(); // فتح القائمة الجانبية
+                Scaffold.of(context).openDrawer();
               },
             ),
           ),
         ),
       ),
-      body: Padding(
-  padding: const EdgeInsets.all(16.0),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const Text("تسجيل بيانات اليوم", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-      const SizedBox(height: 10),
-      Card(
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: ListTile(
-          leading: const Icon(Icons.note_add, color: Colors.teal),
-          title: const Text("سجل اليوميات لحصانك"),
-          trailing: const Icon(Icons.arrow_forward_ios),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const DailyLogScreen()),
-            );
-          },
+      body: SingleChildScrollView(
+        child: Column(
+          children: List.generate(7, (index) => buildDataContainer(index)),
         ),
       ),
-      const SizedBox(height: 20),
-      const Text("آخر الخيول المضافة", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-      const SizedBox(height: 10),
-      Expanded(
-        child: ListView.builder(
-          itemCount: horses.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              leading: const Icon(Icons.pets),
-              title: Text(horses[index]),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Horse(horseName: horses[index]),
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ),
-    ],
-  ),
-),
-
-      bottomNavigationBar: BottomNavigationBar(
+       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.teal,
         unselectedItemColor: Colors.white,
         currentIndex: currentIndex,
@@ -200,6 +173,249 @@ ListTile(
           BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: "Profile"),
         ],
       ),
+    );
+  }
+
+  Widget buildDataContainer(int index) {
+    // ممكن هنا تغير المحتوى حسب رقم الكونتينر لو حبيت
+    // بس دلوقتي هخليهم نفس التصميم اللي بعتته لك مع اختلاف رقم بس للتمييز
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      height: 200,
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 1, 13, 42),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: index % 3 == 0
+            ? Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      splashColor: Colors.teal,
+                      onTap: () {
+                        print("Container $index Male tapped");
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 4, 17, 46),
+                          borderRadius: BorderRadius.circular(40.0),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.male, size: 80, color: Colors.white),
+                            const SizedBox(height: 10),
+                            Text(
+                              "Male",
+                              style: const TextStyle(
+                                fontSize: 30,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: InkWell(
+                      splashColor: Colors.teal,
+                      onTap: () {
+                        print("Container $index Female tapped");
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 4, 17, 46),
+                          borderRadius: BorderRadius.circular(40.0),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.female, size: 80, color: Colors.white),
+                            const SizedBox(height: 10),
+                            Text(
+                              "Female",
+                              style: const TextStyle(
+                                fontSize: 30,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : index % 3 == 1
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 4, 17, 46),
+                            borderRadius: BorderRadius.circular(40.0),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Height",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "${slider.toStringAsFixed(1)}",
+                                style: const TextStyle(
+                                  fontSize: 60,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Slider(
+                                value: slider,
+                                onChanged: (double x) {
+                                  setState(() {
+                                    slider = x;
+                                  });
+                                },
+                                min: 75,
+                                max: 250,
+                                inactiveColor: Colors.white,
+                                activeColor: Colors.red,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 4, 17, 46),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Weight",
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "$num1",
+                                style: const TextStyle(
+                                  fontSize: 40.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  FloatingActionButton(
+                                    heroTag: 'weight_inc_$index',
+                                    onPressed: () {
+                                      setState(() {
+                                        num1++;
+                                      });
+                                    },
+                                    child: const Text(
+                                      "+",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  FloatingActionButton(
+                                    heroTag: 'weight_dec_$index',
+                                    onPressed: () {
+                                      setState(() {
+                                        if (num1 > 0) num1--;
+                                      });
+                                    },
+                                    child: const Text(
+                                      "-",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 4, 17, 46),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Age",
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "$num2",
+                                style: const TextStyle(
+                                  fontSize: 40,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  FloatingActionButton(
+                                    heroTag: 'age_inc_$index',
+                                    onPressed: () {
+                                      setState(() {
+                                        num2++;
+                                      });
+                                    },
+                                    child: const Text(
+                                      "+",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  FloatingActionButton(
+                                    heroTag: 'age_dec_$index',
+                                    onPressed: () {
+                                      setState(() {
+                                        if (num2 > 0) num2--;
+                                      });
+                                    },
+                                    child: const Text(
+                                      "-",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+      ),
+
+     
     );
   }
 
@@ -229,7 +445,7 @@ ListTile(
                     leading: const Icon(Icons.pets),
                     title: Text(horses[index]),
                     onTap: () {
-                      Navigator.pop(context); // Close the bottom sheet
+                      Navigator.pop(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -247,11 +463,11 @@ ListTile(
                 leading: const Icon(Icons.add),
                 title: const Text("Add New Horse"),
                 onTap: () {
-                  Navigator.pop(context); // Close the bottom sheet
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const Horse(), // Empty form
+                      builder: (context) => const Horse(),
                     ),
                   );
                 },
@@ -263,3 +479,4 @@ ListTile(
     );
   }
 }
+

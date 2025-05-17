@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
 
 class Horse extends StatefulWidget {
-  final String? horseName; // ممكن يبقى فاضي لو بضيف حصان جديد
+  final String? horseName;
+  final String? gender, birthDate, breed, coat, medicalNotes, countryOfBirth, color, owner, nationalId, stableLocation;
 
-  const Horse({Key? key, this.horseName}) : super(key: key);
+  const Horse({
+    Key? key,
+    this.horseName,
+    this.gender,
+    this.birthDate,
+    this.breed,
+    this.coat,
+    this.medicalNotes,
+    this.countryOfBirth,
+    this.color,
+    this.owner,
+    this.nationalId,
+    this.stableLocation,
+  }) : super(key: key);
 
   @override
   _HorseState createState() => _HorseState();
 }
 
-class _HorseState extends State<Horse> {
-  // Controllers
+class _HorseState extends State<Horse> with SingleTickerProviderStateMixin {
   late TextEditingController nameController;
   TextEditingController genderController = TextEditingController();
   TextEditingController birthDateController = TextEditingController();
@@ -23,30 +36,43 @@ class _HorseState extends State<Horse> {
   TextEditingController nationalIdController = TextEditingController();
   TextEditingController stableLocationController = TextEditingController();
 
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
   @override
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.horseName ?? "");
+    genderController.text = widget.gender ?? "";
+    birthDateController.text = widget.birthDate ?? "";
+    breedController.text = widget.breed ?? "";
+    coatController.text = widget.coat ?? "";
+    medicalNotesController.text = widget.medicalNotes ?? "";
+    countryOfBirthController.text = widget.countryOfBirth ?? "";
+    colorController.text = widget.color ?? "";
+    ownerController.text = widget.owner ?? "";
+    nationalIdController.text = widget.nationalId ?? "";
+    stableLocationController.text = widget.stableLocation ?? "";
 
-    // لو جالي حصان موجود - ممكن تهيأ الداتا هنا
-    if (widget.horseName != null) {
-      // هنا مؤقتًا بنعمل بيانات وهمية، بعدين هتربطها بالباك اند
-      genderController.text = "Male";
-      birthDateController.text = "01/01/2020";
-      breedController.text = "Arabian";
-      coatController.text = "White";
-      medicalNotesController.text = "Healthy";
-      countryOfBirthController.text = "UAE";
-      colorController.text = "White";
-      ownerController.text = "Ahmed";
-      nationalIdController.text = "123456789";
-      stableLocationController.text = "Dubai Stable";
-    }
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
+
+    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
+
+    _animationController.forward();
   }
 
   @override
   void dispose() {
-    // Dispose controllers
     nameController.dispose();
     genderController.dispose();
     birthDateController.dispose();
@@ -58,53 +84,89 @@ class _HorseState extends State<Horse> {
     ownerController.dispose();
     nationalIdController.dispose();
     stableLocationController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor:const Color.fromARGB(255, 163, 166, 173),
-
-        title: Text(widget.horseName != null ? "Horse Profile" : "Add New Horse"),
+        elevation: 6,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF6A8D92), Color(0xFFC0D6DF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: Text(
+          widget.horseName != null ? "Horse Profile" : "Add New Horse",
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.1,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Container(color: const Color.fromARGB(255, 255, 255, 255)),
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFE7EFF1), Color(0xFFC0D6DF)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28),
             child: CustomScrollView(
               slivers: [
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 50),
-                ),
+                SliverToBoxAdapter(child: SizedBox(height: size.height * 0.06)),
                 SliverToBoxAdapter(
                   child: Center(
-                    child: Container(
-                      width: MediaQuery.sizeOf(context).width * 0.25,
-                      height: MediaQuery.sizeOf(context).width * 0.25,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-          color: const Color.fromARGB(255, 163, 166, 173),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          // هنا تضيف الكاميرا لو حابب
-                        },
-                        icon: Icon(
-                          Icons.camera_alt_rounded,
-                          size: MediaQuery.sizeOf(context).width * 0.15,
-                          color: Colors.black,
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SlideTransition(
+                        position: _slideAnimation,
+                        child: Container(
+                          width: size.width * 0.25,
+                          height: size.width * 0.25,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              )
+                            ],
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              // TODO: add camera or gallery picker
+                            },
+                            icon: Icon(
+                              Icons.camera_alt_rounded,
+                              size: size.width * 0.15,
+                              color: Colors.teal.shade700,
+                            ),
+                            splashRadius: 35,
+                            tooltip: "Upload Horse Image",
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 35),
-                ),
+                SliverToBoxAdapter(child: SizedBox(height: size.height * 0.045)),
                 DetailsWidget(
                   details: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,9 +179,7 @@ class _HorseState extends State<Horse> {
                     ],
                   ),
                 ),
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 20),
-                ),
+                SliverToBoxAdapter(child: SizedBox(height: size.height * 0.025)),
                 DetailsWidget(
                   details: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,9 +192,7 @@ class _HorseState extends State<Horse> {
                     ],
                   ),
                 ),
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 100),
-                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 120)),
               ],
             ),
           ),
@@ -146,27 +204,29 @@ class _HorseState extends State<Horse> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    print('Edit Button Pressed');
-                    // هنا ممكن تضيف حفظ للتعديلات
-                  },
-                  child: const Text('delete'),
+                  onPressed: () {},
+                  child: const Text('Delete'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    textStyle: const TextStyle(fontSize: 16, color: Colors.white),
+                    backgroundColor: Colors.redAccent.shade100,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    elevation: 4,
+                    shadowColor: Colors.redAccent.shade200,
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    print('Delete Button Pressed');
-                    // هنا تحط حذف الحصان
-                  },
-                  child: const Text('save'),
+                  onPressed: () {},
+                  child: const Text('Save'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    textStyle: const TextStyle(fontSize: 16, color: Colors.white),
+                    backgroundColor: Colors.teal.shade600,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    elevation: 6,
+                    shadowColor: Colors.tealAccent.shade400,
                   ),
                 ),
               ],
@@ -180,15 +240,26 @@ class _HorseState extends State<Horse> {
   Widget buildField(String header, TextEditingController controller) {
     return DetailItem(
       header: header,
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: 'Enter $header',
-          hintStyle: const TextStyle(color: Colors.white),
-          border: InputBorder.none,
-          filled: true,
-          fillColor: Colors.white.withOpacity(0.2),
+      child: Focus(
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: 'Enter $header',
+            hintStyle: const TextStyle(color: Colors.white70),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Colors.teal.withOpacity(0.3),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          ),
+          cursorColor: Colors.teal.shade900,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
         ),
+        onFocusChange: (hasFocus) {
+          setState(() {}); // to update UI on focus change if needed
+        },
       ),
     );
   }
@@ -207,14 +278,20 @@ class DetailItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             header,
-            style: const TextStyle(color: Colors.white, fontSize: 20),
+            style: const TextStyle(
+              color: Colors.teal,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.7,
+            ),
           ),
+          const SizedBox(height: 6),
           child,
         ],
       ),
@@ -231,10 +308,17 @@ class DetailsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: const Color.fromARGB(255, 163, 166, 173),
+          borderRadius: BorderRadius.circular(22),
+          color: Colors.teal.shade200.withOpacity(0.85),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.teal.shade100.withOpacity(0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            )
+          ],
         ),
         child: details,
       ),
